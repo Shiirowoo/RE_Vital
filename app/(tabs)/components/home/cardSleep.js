@@ -61,16 +61,7 @@ function HorasDormidas(){
     )
 }
 
-export default function CardSleep(){
-    let [fontsLoaded] = useFonts({
-        Inter_400Regular,
-        Inter_700Bold
-      });
-    
-      if (!fontsLoaded) {
-        return null;
-      }
-      
+export default function CardSleep(){ 
     return  (
         <View style={styles.view}>
                 <View style={{

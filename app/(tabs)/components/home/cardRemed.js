@@ -1,7 +1,6 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Entypo from '@expo/vector-icons/Entypo';
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { useFonts, Inter_400Regular, Inter_700Bold, Inter_900Black } from '@expo-google-fonts/inter';
 
 const styles = StyleSheet.create({
     view: {
@@ -22,15 +21,6 @@ const styles = StyleSheet.create({
 })
 
 function Add(){
-    let [fontsLoaded] = useFonts({
-        Inter_400Regular,
-        Inter_700Bold,
-        Inter_900Black
-      });
-    
-      if (!fontsLoaded) {
-        return null;
-      }
     return(
         <View style={{
             borderWidth: 5,
@@ -59,15 +49,6 @@ function Add(){
     )
 }
 function Remed(){
-    let [fontsLoaded] = useFonts({
-        Inter_400Regular,
-        Inter_700Bold,
-        Inter_900Black
-      });
-    
-      if (!fontsLoaded) {
-        return null;
-      }
       return(
         <View style={{
             borderWidth: 5,
@@ -102,15 +83,6 @@ function Remed(){
 
 
 export default function CardRemed(){
-    let [fontsLoaded] = useFonts({
-        Inter_400Regular,
-        Inter_700Bold
-      });
-    
-      if (!fontsLoaded) {
-        return null;
-      }
-
     return  (
         <View style={styles.view}>
             <View style={{

@@ -1,5 +1,5 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { View, Text, StyleSheet } from "react-native";
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
 
 const styles = StyleSheet.create({
@@ -21,15 +21,6 @@ const styles = StyleSheet.create({
 })
 
 export default function CardWater(){
-    let [fontsLoaded] = useFonts({
-        Inter_400Regular,
-        Inter_700Bold
-      });
-    
-      if (!fontsLoaded) {
-        return null;
-      }
-
     return  (
         <View style={styles.view}>
             <View style={{
