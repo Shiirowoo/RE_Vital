@@ -1,10 +1,12 @@
 import { View, TextInput, StyleSheet, Text, Pressable, Alert } from 'react-native'
 import { useState } from 'react';
 import { useSQLiteContext } from 'expo-sqlite';
+import { useRouter } from "expo-router";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export default function screenRegisterEvento(){
+    const router = useRouter()
     const db = useSQLiteContext()
     const [nome, setNome] = useState('')
     const [date, setDate] = useState(new Date());
@@ -24,10 +26,12 @@ export default function screenRegisterEvento(){
                 "O seu Evento já está cadastrado",
                 [
                     {text: "OK", onPress: async() => {}},
-                    {text: "Voltar", onPress: async() => {}}
+                    {text: "Voltar", onPress: async() => {
+                        const router = useRouter()
+                        router.back()
+                    }}
                 ]
             )
-            return
         }
         try {
             await statement.executeAsync({$nome: dados.nome, $data: dados.data})
@@ -35,19 +39,16 @@ export default function screenRegisterEvento(){
         finally {
             await statement.finalizeAsync()
         }
+        
         Alert.alert(
             "Sucesso",
             "O seu Evento foi Cadastrado com sucesso",
             [
-                {text: "OK", onPress: async() => {}},
-                {text: "Voltar", onPress: async() => {}}
+                {text: "Voltar", onPress: () => {
+                    router.back()
+                }}
             ]
         )
-        const results = await db.getAllAsync("SELECT * FROM evento")
-
-        for (const row of results) {
-           console.log(row.idEvento, row.evNome, row.evData);
-        }
     }
 
     const onChange = (event, selectedDate) => {
@@ -73,7 +74,7 @@ export default function screenRegisterEvento(){
 
     const dados = {
         nome: nome,
-        data: date.toLocaleString(),
+        data: date.toISOString(),
     }
     return (
         <View style={{

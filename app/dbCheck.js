@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 
 export default async function dbCheck(){
-    const db = await SQLite.openDatabaseAsync('revital.db')
+    const db = await SQLite.openDatabaseAsync('test1.db')
 
     await db.execAsync(`
         PRAGMA journal_mode = WAL;

@@ -26,6 +26,11 @@
     "scheme": "revital",
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "60363204-7ced-43d0-904a-3c2936a47f13"
+      }
+    }
   }
 }

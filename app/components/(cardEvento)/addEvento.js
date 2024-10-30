@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
 export default function Add(){
     return(
         <View style={styles.caixa}>
-            <Link href={'./screen/registerEvento'}>
+            <Link href={'./screen/evento/registerEvento'}>
                 <Entypo name="plus" size={58} color="white"/>
             </Link>
         </View>           

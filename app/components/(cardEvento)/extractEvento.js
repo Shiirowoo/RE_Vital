@@ -1,50 +1,67 @@
-import { View, Text, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSQLiteContext } from "expo-sqlite";
+import { useEffect, useState } from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 
 export default function Evento(){
     const db = useSQLiteContext()
     const [evento, setEventos] = useState([])
-  
+
     useEffect(() => {
         async function setup(){
             const result = await db.getAllAsync(`
                 SELECT 
                     idEvento AS 'ID',
-                    SUBSTR(evData, 1, 5) AS 'Dia',
-                    SUBSTR(evData, 12, 5) AS 'Hora',
+                    evData AS 'Data',
                     evNome AS 'Nome' 
                 FROM evento
                 ORDER BY evData ASC;
             `);
             setEventos(result);
         }
-        setup()
+        const interval = setInterval(() => {
+            setup()
+        }, 500)
+
+        return () => clearInterval(interval)
+
     }, [])
 
+
+    const router = useRouter();
+
+    const detalheEvento = (id) => {
+        router.push({
+            pathname: '/screen/evento/editaEvento',
+            params: {
+                id: id
+            }
+        })
+    }
     return(
         <View style={{flexDirection: 'row'}}>
-            {evento.map((evento, index) => {
-                const dia = evento.Dia
-                const hora = evento.Hora
+            {evento.map((evento) => {
+                const data = new Date(evento.Data)
+                const dia = data.toLocaleDateString()
+                const hora = data.toLocaleTimeString()
                 const nome = evento.Nome
                 const id = evento["ID"]
                 return (
-                    <View key={index} style={{marginHorizontal: 6}}>
-                        <Link href={"../../(tabs)/agua"}>
-                            <View style={styles.caixa}>
+                    <View key={id} style={{marginHorizontal: 6}}>
+                            <Pressable
+                            style={styles.caixa}
+                            onPress={() => detalheEvento(id)}
+                            >
                                 <View>
-                                    <Text style={styles.diaCaixa}>{dia}</Text>
+                                    <Text style={styles.diaCaixa}>{(dia.replace('-','/')).substring(0, 5)}</Text>
                                 </View>
                                 <View>
-                                    <Text style={styles.horCaixa}>{hora}</Text>
+                                    <Text style={styles.horCaixa}>{hora.substring(0, 5)}</Text>
                                 </View>
                                 <View>
                                     <Text style={styles.txtCaixa}>{nome}</Text>
                                 </View>
-                            </View>
-                        </Link>
+                            </Pressable>
                     </View>
                 )
             })}
