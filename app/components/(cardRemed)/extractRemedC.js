@@ -11,7 +11,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#1d0ce3",
         width: 140,
         height: 140,
-        marginHorizontal: 5
+        marginHorizontal: 5,
+        flexDirection: 'row'
     },
     h1: {
         color: "white",
@@ -30,22 +31,30 @@ const styles = StyleSheet.create({
     }
 })
 
-export default function ExtractRemedio(){
+export default function ExtractRemedioContinuo(){
     const db = useSQLiteContext();
     const router = useRouter();
-    const [remedio, setRemedio] = useState([])
+    const [remedioC, setRemedioC] = useState([]);
 
     useEffect(()=> {
         async function setup(){
             const result = await db.getAllAsync(`
             SELECT 
-                remNome AS 'nome',
-                idRemedio AS 'id'
-            FROM remedio;
+                remedioContinuo.idRemContinuo AS 'ID',
+                remedioContinuo.remcNome AS 'Nome',
+                STRFTIME('%H:%M', rmcUsos.rmcHorario) AS 'Horario'
+            FROM remedioContinuo
+                INNER JOIN rmcUsos
+                    ON remedioContinuo.idRemContinuo = rmcUsos.idRemContinuo
+            WHERE rmcUsos.rmcHorario > TIME('now','-3 hours');
             `);
-            setRemedio(result) 
+            setRemedioC(result)
         }
-        setup()
+        const interval = setInterval(() => {
+            setup()
+        }, 200)
+        
+        return () => clearInterval(interval)
     })
 
     const editaRemedio = (id) => {
@@ -59,14 +68,13 @@ export default function ExtractRemedio(){
 
     return(
       <View>
-          {remedio.map((remedio) => {
-            const { nome, id } = remedio
-            const hora = "14:00"
+          {remedioC.map((remedio) => {
+            const { Nome, ID, Horario } = remedio
             return(
-                <View key={id} style={styles.caixa}>
-                    <Pressable onPress={async() => editaRemedio(id)}>
-                        <Text style={styles.h1}>{hora}</Text>
-                        <Text style={styles.h2}>{nome}</Text>
+                <View key={ID} style={styles.caixa}>
+                    <Pressable onPress={async() => editaRemedio(ID)}>
+                        <Text style={styles.h1}>{Horario}</Text>
+                        <Text style={styles.h2}>{Nome}</Text>
                     </Pressable>
                 </View>
             )

@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 
 export default async function dbCheck(){
-    const db = await SQLite.openDatabaseAsync('test1.db')
+    const db = await SQLite.openDatabaseAsync(':memory:')
 
     await db.execAsync(`
         PRAGMA journal_mode = WAL;
@@ -38,19 +38,32 @@ export default async function dbCheck(){
         
         CREATE TABLE IF NOT EXISTS remedio(
             idRemedio INTEGER PRIMARY KEY AUTOINCREMENT,
-            remdNome TEXT,
-            remdQuant INTEGER,
-            remdIntervalo INTEGER,
-            idPerson INTEGER,
-            FOREIGN KEY (idPerson) REFERENCES person(idPerson)
+            remNome TEXT,
+            remQuant INTEGER,
+            remMedida TEXT,
+            remComeco TEXT,
+            remIntervaloDoses INTEGER,
+            remFinal INTEGER
+        );
+
+        CREATE TABLE IF NOT EXISTS remedioContinuo(
+            idRemContinuo INTEGER PRIMARY KEY AUTOINCREMENT,
+            remcNome TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS rmcUsos(
+            idUsos INTEGER PRIMARY KEY AUTOINCREMENT,
+            idRemContinuo INTEGER,
+            rmcHorario TEXT,
+            rmcQuant FLOAT,
+            rmcMedida TEXT,
+            FOREIGN KEY (idRemContinuo) REFERENCES remedioContinuo(idRemContinuo)
         );
 
         CREATE TABLE IF NOT EXISTS pet(
             idPet INTEGER PRIMARY KEY AUTOINCREMENT,
             petNomeEvent TEXT,
-            petHoraEvent TEXT,
-            idPerson INTEGER,
-            FOREIGN KEY (idPerson) REFERENCES person(idPerson)
+            petHoraEvent TEXT
         );
 
         INSERT INTO person (personPeso, personHSono, personPet)

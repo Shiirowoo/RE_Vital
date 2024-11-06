@@ -21,7 +21,7 @@ export default function Evento(){
         }
         const interval = setInterval(() => {
             setup()
-        }, 500)
+        }, 200)
 
         return () => clearInterval(interval)
 

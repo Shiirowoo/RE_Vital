@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, ScrollView } from "react-native";
 
 import Add from './addRemed';
 import Remed from './extractRemed'
+import ExtractRemedioContinuo from './extractRemedC';
+import ExtractRemedio from './extractRemed';
 
 const styles = StyleSheet.create({
     view: {
@@ -40,7 +42,8 @@ export default function CardRemed(){
             </View>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 <Add />
-                <Remed />
+                <ExtractRemedioContinuo />
+                <ExtractRemedio />
             </ScrollView>
         </View>
     )

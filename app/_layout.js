@@ -20,7 +20,7 @@ export default function Router(){
   }
 
   return(
-    <SQLiteProvider databaseName="test1.db" onInit={dbCheck}>
+    <SQLiteProvider databaseName=":memory:" onInit={dbCheck}>
       <Stack screenOptions={{
         headerShown: false,
       }}>
