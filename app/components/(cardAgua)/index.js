@@ -1,9 +1,6 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-
-import Add from './addRemed';
-import ExtractRemedioContinuo from './extractRemedC';
-import ExtractRemedio from './extractRemed';
+import { View, Text, StyleSheet } from "react-native";
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
 
 const styles = StyleSheet.create({
     view: {
@@ -23,27 +20,24 @@ const styles = StyleSheet.create({
     }
 })
 
-export default function CardRemed(){
-    return (
+export default function CardWater(){
+    return  (
         <View style={styles.view}>
             <View style={{
                 flexDirection: "row",
                 marginBottom: 6
             }}>
-                <MaterialCommunityIcons name="pill" size={24} color="white" />
+                <Ionicons name="water" size={28} color="white"/>
                 <Text style={{
                 fontSize: 24,
                 color: "#fff",
                 fontWeight: "bold",
                 marginLeft: 12,
                 fontFamily: "Inter_700Bold"
-                }}>Rémedios</Text>
+                }}>Água</Text>
             </View>
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                <Add />
-                <ExtractRemedioContinuo />
-                <ExtractRemedio />
-            </ScrollView>
+                <Text style={styles.txt}> Água Ingerida: {100} ML</Text>
+                <Text style={styles.txt}> Quantidade Necessária: {2000} ML</Text>
         </View>
     )
 }

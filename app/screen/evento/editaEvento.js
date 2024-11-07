@@ -39,9 +39,11 @@ export default function detalheEvento(){
             [
                 {text: "Sim", onPress: async() => {
                         const statement = await db.prepareAsync("UPDATE evento SET evNome = $nome, evData = $data WHERE idEvento = $id")
-                        console.log(date);
-                        await statement.executeAsync({$nome: nome, $data: date, $id: id})
-                        await statement.finalizeAsync()
+                        try{
+                            await statement.executeAsync({$nome: nome, $data: date, $id: id})
+                        } finally {
+                            await statement.finalizeAsync()
+                        }
                     }
                 },
                 {text: "Não", onPress: async() => {}}
@@ -56,8 +58,11 @@ export default function detalheEvento(){
             [
                 {text: "Sim", onPress: async() => {
                     const statement = await db.prepareAsync("DELETE FROM evento WHERE idEvento = $id")
-                    await statement.executeAsync({$id: id})
-                    await statement.finalizeAsync()
+                    try{
+                        await statement.executeAsync({$id: id})
+                    } finally {
+                        await statement.finalizeAsync()
+                    }
                     router.back()
                 }},
                 {text: "Não", onPress: async() => {}}

@@ -38,14 +38,21 @@ export default function ExtractRemedio(){
     useEffect(()=> {
         async function setup(){
             const result = await db.getAllAsync(`
-            SELECT 
-                remNome AS 'nome',
-                idRemedio AS 'id'
+            SELECT
+                idRemedio AS 'id',
+                remNome AS 'Nome',
+                remFinal AS 'Final'
             FROM remedio;
             `);
-            setRemedio(result) 
-        }
-        setup()
+            setRemedio(result);
+            
+        };
+
+        const interval = setInterval(() => {
+            setup()
+        }, 200)
+
+        return () => clearInterval(interval)
     })
 
     const editaRemedio = (id) => {
@@ -58,20 +65,18 @@ export default function ExtractRemedio(){
     }
 
     return(
-      <View>
+      <View style={{flexDirection: 'row'}}>
           {remedio.map((remedio) => {
-            const { nome, id } = remedio
-            const hora = "14:00"
+            const { Nome, id, Final } = remedio
             return(
                 <View key={id} style={styles.caixa}>
                     <Pressable onPress={async() => editaRemedio(id)}>
-                        <Text style={styles.h1}>{hora}</Text>
-                        <Text style={styles.h2}>{nome}</Text>
+                        <Text style={styles.h2}>{Final}</Text>
+                        <Text style={styles.h2}>{Nome}</Text>
                     </Pressable>
                 </View>
             )
-          })
-          }
+          })}
       </View>
   )
 }

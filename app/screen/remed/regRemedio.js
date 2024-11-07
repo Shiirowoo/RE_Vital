@@ -13,32 +13,40 @@ export default function Remedio(){
     const [quant, setQuant] = useState('');
     const [medida, setMedida] = useState('');
     const [intervalo, setIntervalo] = useState('');
+    const [final, setFinal] = useState(null);
+    const [comeco, setComeco] = useState(null);
 
-    const [final, setFinal] = useState(new Date());
-    const [comeco, setComeco] = useState(new Date());
-    const [mode, setMode] = useState('time');
-    const [show, setShow] = useState(false);
+    const [startDate, setStartDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showTimePicker, setShowTimePicker] = useState(false);
+    const [isStartDate, setIsStartDate] = useState(true);
 
-    const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate;
-        setShow(false);
-        if (mode == 'time'){
-            setFinal(currentDate);
+    const handleConfirmDate = (event, date) => {
+        setShowDatePicker(false);
+        if (date) {
+            if (isStartDate) {
+                setComeco(date); // Define a data inicial
+                setShowTimePicker(true); // Mostra o seletor de tempo
+            } else {
+                setFinal(date); // Define a data final
+                setShowTimePicker(true);
+            }
         }
-        setComeco(currentDate);
     };
 
-    const showMode = (currentMode) => {
-        setShow(true);
-        setMode(currentMode);
-    };
+    const handleConfirmTime = (event, time) => {
+        setShowTimePicker(false);
+        if (time) {
+            const selectedDateTime = isStartDate
+                ? new Date(comeco.setHours(time.getHours(), time.getMinutes()))
+                : new Date(final.setHours(time.getHours(), time.getMinutes()));
 
-    const showTimepicker = () => {
-        showMode('time');
-    };
-
-    const showDatepicker = () => {
-        showMode('date');
+            if (isStartDate) {
+                setStartDate(selectedDateTime);
+            } else {
+                setFinal(selectedDateTime);
+            }
+        }
     };
 
     const enviarDados = async() => {
@@ -47,16 +55,38 @@ export default function Remedio(){
             SELECT $nome, $quant, $medida, $comeco, $intervalo, $final
             WHERE (SELECT COUNT(*) FROM remedio WHERE remNome = $nome) = 0;
         `);
+        const registrarHorarios = await db.prepareAsync(`
+            WITH RECURSIVE horarios AS (
+            SELECT
+                idRemedio,
+                remComeco AS 'remHorario'
+            FROM remedio
+
+            UNION ALL
+
+            SELECT
+                r.idRemedio,
+                DATETIME(h.remHorario, '+' || r.remIntervaloDoses || ' hour') AS 'remHorario'
+            FROM horarios h
+            JOIN remedio r ON h.idRemedio = r.idRemedio
+            WHERE DATETIME(h.remHorario, '+' || r.remIntervaloDoses || ' hour') <= r.remFinal
+        )
+        INSERT INTO remHora (idRemedio, remHorario)
+        SELECT idRemedio, remHorario
+        FROM horarios;
+        `);
 
         try {
             await registrarRemedio.executeAsync({
                 $nome: nome,
                 $quant: quant,
                 $medida: medida,
-                $comeco: comeco,
+                $comeco: comeco.toISOString(),
                 $intervalo: intervalo,
-                $final: final
+                $final: final.toISOString()
             });
+            await registrarHorarios.executeAsync()
+            
             Alert.alert(
                 'Sucesso',
                 'Remedio registrado com sucesso',
@@ -79,30 +109,41 @@ export default function Remedio(){
         value={nome || ''}
         style={{}}
         />
-        <Pressable onPress={showTimepicker} style={{}}>
-            <Text style={{}}>{'A partir de: '+comeco.toLocaleDateTimeString()}</Text>
+        <Pressable
+        onPress={() => {
+            setIsStartDate(true);
+            setShowDatePicker(true);
+        }}
+        style={{}}
+        >
+            <Text style={{}}>{comeco ? comeco.toLocaleString() : 'Começo Tratamento'}</Text>
         </Pressable>
-        {show && (
-            <DateTimePicker
-            testID="dateTimePicker"
-            value={comeco}
-            mode={mode}
-            is24Hour={true}
-            onChange={onChange}
-            />
-        )}
-        <Pressable onPress={showDatepicker} style={{}}>
-            <Text style={{}}>{'Até: '+ final.toLocaleDateString()}</Text>
+        <Pressable
+        onPress={() => {
+            setIsStartDate(false);
+            setShowDatePicker(true);
+        }}
+        style={{}}
+        >
+            <Text style={{}}>{final ? final.toLocaleString() : 'Final Tratamento'}</Text>
         </Pressable>
-        {show && (
-            <DateTimePicker
-            testID="dateTimePicker"
-            value={final}
-            mode={mode}
-            is24Hour={true}
-            onChange={onChange}
-            />
+        {showDatePicker && (
+                <DateTimePicker
+                    value={isStartDate ? (comeco || new Date()) : (final || new Date())}
+                    mode="date"
+                    display="default"
+                    onChange={handleConfirmDate}
+                />
         )}
+
+        {showTimePicker && (
+                <DateTimePicker
+                    value={isStartDate ? (comeco || new Date()) : (final || new Date())}
+                    mode="time"
+                    display="default"
+                    onChange={handleConfirmTime}
+                />
+            )}
         <View>
             <TextInput 
             placeholder='Quantidade'

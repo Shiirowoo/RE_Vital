@@ -11,8 +11,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#1d0ce3",
         width: 140,
         height: 140,
-        marginHorizontal: 5,
-        flexDirection: 'row'
+        marginHorizontal: 5
     },
     h1: {
         color: "white",
@@ -34,19 +33,21 @@ const styles = StyleSheet.create({
 export default function ExtractRemedioContinuo(){
     const db = useSQLiteContext();
     const router = useRouter();
+
     const [remedioC, setRemedioC] = useState([]);
 
     useEffect(()=> {
         async function setup(){
             const result = await db.getAllAsync(`
             SELECT 
-                remedioContinuo.idRemContinuo AS 'ID',
-                remedioContinuo.remcNome AS 'Nome',
-                STRFTIME('%H:%M', rmcUsos.rmcHorario) AS 'Horario'
-            FROM remedioContinuo
-                INNER JOIN rmcUsos
-                    ON remedioContinuo.idRemContinuo = rmcUsos.idRemContinuo
-            WHERE rmcUsos.rmcHorario > TIME('now','-3 hours');
+                rc.idRemContinuo AS 'ID',
+                rc.remcNome AS 'Nome',
+                STRFTIME('%H:%M', MIN(s.rmcHorario)) AS 'Horario'
+            FROM remedioContinuo rc
+                INNER JOIN rmcUsos s
+                    ON rc.idRemContinuo = s.idRemContinuo
+            WHERE s.rmcHorario > TIME('now','localtime')
+            GROUP BY rc.remcNome;
             `);
             setRemedioC(result)
         }
@@ -55,11 +56,11 @@ export default function ExtractRemedioContinuo(){
         }, 200)
         
         return () => clearInterval(interval)
-    })
+    }, [db])
 
     const editaRemedio = (id) => {
         router.push({
-            pathname: '/screen/remed/editaRemed',
+            pathname: '/screen/remed/editaRemedC',
             params: {
                 id: id
             }
@@ -67,7 +68,7 @@ export default function ExtractRemedioContinuo(){
     }
 
     return(
-      <View>
+      <View style={{flexDirection: 'row'}}>
           {remedioC.map((remedio) => {
             const { Nome, ID, Horario } = remedio
             return(

@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 
 export default async function dbCheck(){
-    const db = await SQLite.openDatabaseAsync(':memory:')
+    const db = await SQLite.openDatabaseAsync('memory')
 
     await db.execAsync(`
         PRAGMA journal_mode = WAL;
@@ -44,6 +44,12 @@ export default async function dbCheck(){
             remComeco TEXT,
             remIntervaloDoses INTEGER,
             remFinal INTEGER
+        );
+
+        CREATE TABLE IF NOT EXISTS remHora(
+            idRemedio INTEGER,
+            remHorario TEXT,
+            FOREIGN KEY (idRemedio) REFERENCES remedio(idRemedio)
         );
 
         CREATE TABLE IF NOT EXISTS remedioContinuo(
