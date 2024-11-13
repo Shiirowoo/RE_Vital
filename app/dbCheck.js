@@ -79,5 +79,15 @@ export default async function dbCheck(){
         INSERT INTO sono (sonoDateIni, sonoDateFim, idPerson)
         SELECT '10/10/2024 00:00:00', '10/10/2024 08:30:00', 1
         WHERE (SELECT COUNT(*) FROM sono) = 0;
+
+        INSERT INTO pet (petNomeEvent, petHoraEvent)
+        SELECT * FROM (
+            SELECT 'Banheiro' AS petNomeEvent, '07:00:00' AS petHoraEvent
+            UNION ALL
+            SELECT 'Comida', '07:00:00'
+            UNION ALL
+            SELECT 'Agua', '07:00:00'
+        ) AS pet_eventos
+        WHERE (SELECT COUNT(*) FROM pet) = 0;
     `)
 }

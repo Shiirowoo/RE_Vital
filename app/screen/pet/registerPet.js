@@ -6,19 +6,19 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export default function screenRegisterEvento(){
-    const router = useRouter()
-    const db = useSQLiteContext()
-    const [nome, setNome] = useState('')
+    const router = useRouter();
+    const db = useSQLiteContext();
+
+    const [nome, setNome] = useState('');
+
     const [date, setDate] = useState(new Date());
-    const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
 
-    const registrarEvento = async(dados) => {
-        const { nomeE, dataE } = dados
-        const statement = await db.prepareAsync("INSERT INTO evento (evNome, evData) VALUES ($nome, $data)")
+    const registrarEvento = async() => {
+        const statement = await db.prepareAsync("INSERT INTO pet (petNomeEvent, petHoraEvent) VALUES ($nome, $data)")
         
-        const statementVerify = await db.prepareAsync("SELECT COUNT(*) FROM evento WHERE evNome = $nome")
-        const verify = await statementVerify.executeAsync({$nome: nomeE})
+        const statementVerify = await db.prepareAsync("SELECT COUNT(*) FROM pet WHERE petNomeEvent = $nome")
+        const verify = await statementVerify.executeAsync({$nome: nome})
         const eventExist = await verify.getFirstAsync()
 
         if (eventExist["COUNT(*)"] > 0){
@@ -33,9 +33,10 @@ export default function screenRegisterEvento(){
                     }}
                 ]
             )
+            return
         }
         try {
-            await statement.executeAsync({$nome: nomeE, $data: dataE})
+            await statement.executeAsync({$nome: nome, $data: date})
         }
         finally {
             await statement.finalizeAsync()
@@ -58,25 +59,6 @@ export default function screenRegisterEvento(){
         setDate(currentDate);
     };
 
-    const showMode = (currentMode) => {
-        setShow(true);
-        setMode(currentMode);
-    };
-
-    const showDatepicker = () => {
-        showMode('date');
-    };
-
-    const showTimepicker = () => {
-        showMode('time');
-    };
-    const dateShow = (date.toLocaleString()).split(' ')[0]
-    const hour = ((date.toLocaleString()).split(' ')[1]).split(':')[0] + ':' + ((date.toLocaleString()).split(' ')[1]).split(':')[1]
-
-    const dados = {
-        nomeE: nome,
-        dataE: date.toISOString(),
-    }
     return (
         <View style={{
             padding: 20,
@@ -90,26 +72,22 @@ export default function screenRegisterEvento(){
                     onChangeText={setNome}
                     value={nome}
                 />
-                <Pressable onPress={showDatepicker} style={styles.dateInput}>
+                <Pressable onPress={async() => setShow(true)} style={styles.dateInput}>
                     <MaterialCommunityIcons name="calendar" size={30} color="white" />
-                    <Text style={styles.txtDate}>{dateShow}</Text>
-                </Pressable>
-                <Pressable onPress={showTimepicker} style={styles.dateInput}>
-                    <MaterialCommunityIcons name="calendar" size={30} color="white" />
-                    <Text style={styles.txtDate}>{hour}</Text>
+                    <Text style={styles.txtDate}>{date ? date.toLocaleTimeString() : new Date()}</Text>
                 </Pressable>
                 {show && (
                     <DateTimePicker
                     testID="dateTimePicker"
                     value={date}
-                    mode={mode}
+                    mode='time'
                     is24Hour={true}
                     onChange={onChange}
                     />
                 )}
             </View>
             <View>
-                <Pressable style={styles.registerButton} onPress={async() => registrarEvento(dados)}>
+                <Pressable style={styles.registerButton} onPress={registrarEvento}>
                     <Text style={styles.registerTxt}>Registrar</Text>
                 </Pressable>
             </View>
