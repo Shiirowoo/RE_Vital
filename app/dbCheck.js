@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 
 export default async function dbCheck(){
-    const db = await SQLite.openDatabaseAsync('memory')
+    const db = await SQLite.openDatabaseAsync('revital.db')
 
     await db.execAsync(`
         PRAGMA journal_mode = WAL;
@@ -11,22 +11,25 @@ export default async function dbCheck(){
             idPerson INTEGER PRIMARY KEY AUTOINCREMENT,
             personPeso REAL,
             personHSono TEXT,
-            personPet INTEGER
+            personPet INTEGER,
+            personIntervaloAgua INTEGER,
+            personTrabalhoInicio TEXT,
+            personTrabalhoFim TEXT
         );
 
         CREATE TABLE IF NOT EXISTS sono(
             idSono INTEGER PRIMARY KEY AUTOINCREMENT,
+            idPerson INTEGER,
             sonoDateIni TEXT,
             sonoDateFim TEXT,
-            idPerson INTEGER,
             FOREIGN KEY (idPerson) REFERENCES person(idPerson)
         );
 
         CREATE TABLE IF NOT EXISTS agua(
             idAgua INTEGER PRIMARY KEY AUTOINCREMENT,
-            intervaloAgua INTEGER,
-            quantAgua REAL,
             idPerson INTEGER,
+            aguaQuant INTEGER,
+            aguaData TEXT,
             FOREIGN KEY (idPerson) REFERENCES person(idPerson)
         );
 
@@ -72,14 +75,6 @@ export default async function dbCheck(){
             petHoraEvent TEXT
         );
 
-        INSERT INTO person (personPeso, personHSono, personPet)
-        SELECT 68, '08:00:00', 1
-        WHERE (SELECT COUNT(*) FROM person) = 0;
-
-        INSERT INTO sono (sonoDateIni, sonoDateFim, idPerson)
-        SELECT '10/10/2024 00:00:00', '10/10/2024 08:30:00', 1
-        WHERE (SELECT COUNT(*) FROM sono) = 0;
-
         INSERT INTO pet (petNomeEvent, petHoraEvent)
         SELECT * FROM (
             SELECT 'Banheiro' AS petNomeEvent, '07:00:00' AS petHoraEvent
@@ -89,5 +84,13 @@ export default async function dbCheck(){
             SELECT 'Agua', '07:00:00'
         ) AS pet_eventos
         WHERE (SELECT COUNT(*) FROM pet) = 0;
+
+        INSERT INTO agua (aguaQuant, aguaData, idPerson)
+        SELECT 0, DATETIME('now', 'localtime'), 1
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM agua
+            WHERE STRFTIME('%d-%m-%Y', aguaData) = STRFTIME('%d-%m-%Y', DATETIME('now', 'localtime'))
+        );
     `)
 }

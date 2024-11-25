@@ -3,60 +3,13 @@ import { Link, useRouter } from 'expo-router';
 import Entypo from '@expo/vector-icons/Entypo';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-const styles = StyleSheet.create({
-    card: {
-        margin: 10,
-        backgroundColor: "#2710f2",
-        padding: 12,
-        borderWidth: 2,
-        borderColor: "#fff",
-        borderRadius: 15,
-    },
-    title: {
-        flexDirection: "row",
-        color: "white",
-        fontWeight: "bold",
-        fontSize: 24,
-        marginLeft: 12,
-        fontFamily: "Inter_700Bold"
-    },
-    caixa: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 5,
-        borderColor: "white",
-        borderRadius: 25,
-        width: 140,
-        height: 140,
-    },
-    diaCaixa: {
-        color: "white",
-        textAlign: "center",
-        fontSize: 20,
-        fontFamily: "Inter_700Bold"
-    },
-    horCaixa: {
-        color: "white",
-        textAlign: "center",
-        fontSize: 30,
-        fontFamily: "Inter_900Black"
-    },
-    txtCaixa: {
-        color: "white",
-        textAlign: "center",
-        fontSize: 12,
-        fontFamily: "Inter_700Bold"
-    }
-});
-
 function Title() {
     return (
         <View style={{
             flexDirection: "row",
             marginBottom: 20
         }}>
-            <AntDesign name="star" size={24} color="white" />
+            <AntDesign name="star" size={24} color="#000000" />
             <Text style={styles.title}>Eventos</Text>
         </View>
     );
@@ -65,24 +18,15 @@ function Title() {
 function Evento({ data: dados }) {
     const router = useRouter();
 
-    const detalheEvento = (id) => {
-        router.push({
-            pathname: '/screen/evento/editaEvento',
-            params: {
-                id: id
-            }
-        });
-    };
-
     return (
         <View style={{ flexDirection: 'row' }}>
             {dados.map((evento) => {
                 const { id, nome, hora, dia } = evento;
                 return (
-                    <View key={id} style={{ marginHorizontal: 6 }}>
+                    <View key={id}>
                         <Pressable
                             style={styles.caixa}
-                            onPress={() => detalheEvento(id)}
+                            onPress={() => router.push('/cardEvento/editaEvento?id='+ id +'')}
                         >
                             <View>
                                 <Text style={styles.diaCaixa}>{dia}</Text>
@@ -104,8 +48,8 @@ function Evento({ data: dados }) {
 function Add() {
     return (
         <View style={styles.caixa}>
-            <Link href={'./screen/evento/registerEvento'}>
-                <Entypo name="plus" size={58} color="white" />
+            <Link href='/cardEvento/registerEvento'>
+                <Entypo name="plus" size={58} color="#000000" />
             </Link>
         </View>
     );
@@ -122,3 +66,62 @@ export default function CardEvento({ data: dados }) {
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    card: {
+        margin: 10,
+        backgroundColor: "#FFFFFF",
+        padding: 12,
+        borderWidth: 1,
+        borderColor: "#E0E0E0",
+        borderRadius: 15,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 3,
+    },
+    title: {
+        flexDirection: "row",
+        color: "#000000",
+        fontWeight: "bold",
+        fontSize: 24,
+        marginLeft: 12,
+        fontFamily: "Inter_700Bold"
+    },
+    caixa:{
+        backgroundColor: '#FFF',
+        marginRight: 10,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: "#BDBDBD",
+        borderRadius: 25,
+        width: 140,
+        height: 140,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 2,
+    },
+    diaCaixa: {
+        color: "#333333",
+        textAlign: "center",
+        fontSize: 20,
+        fontFamily: "Inter_700Bold"
+    },
+    horCaixa: {
+        color: "#333333",
+        textAlign: "center",
+        fontSize: 30,
+        fontFamily: "Inter_900Black"
+    },
+    txtCaixa: {
+        color: "#333333",
+        textAlign: "center",
+        fontSize: 12,
+        fontFamily: "Inter_700Bold"
+    }
+});
